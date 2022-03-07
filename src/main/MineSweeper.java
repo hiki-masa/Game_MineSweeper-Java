@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MineSweeper {
 	final int FieldWidthSize;
@@ -39,7 +40,7 @@ public class MineSweeper {
 				if (Field.get(y).get(x).isMine())
 					System.out.print("□");
 				else
-					System.out.print(Field.get(y).get(x).RoundMineCounter);
+					System.out.print("■");
 			}
 			System.out.println();
 		}
@@ -47,11 +48,19 @@ public class MineSweeper {
 	
 	// Mineの設置
 	private void setMine() {
-		for (int y = 0; y < FieldHeightSize; y++) {
-			Field.get(y).get(0).setMine(true);
+		Random random = new Random();
+		int counter = 0;
+		while (counter < FieldWidthSize * FieldHeightSize * 0.1) {
+			int x = random.nextInt(FieldWidthSize);
+			int y = random.nextInt(FieldHeightSize);
+			if (!Field.get(y).get(x).isMine()) {
+				Field.get(y).get(x).setMine(true);
+				counter++;
+			}
 		}
 	}
 	
+	// 周辺のマスのMine数をカウント
 	private void countRoundMine() {
 		for (int Y = 0; Y < FieldHeightSize; Y++) {
 			for (int X = 0; X < FieldWidthSize; X++) {
@@ -63,7 +72,7 @@ public class MineSweeper {
 							counter++;
 					}
 				}
-				//
+				// カウントした数を記録
 				Field.get(Y).get(X).RoundMineCounter = counter;
 			}
 		}
@@ -71,10 +80,22 @@ public class MineSweeper {
 	
 	// 指定マスをOpen
 	public void Open(int _MouseX, int _MouseY) {
-		if (0 <= _MouseX / MassSize && _MouseX / MassSize < FieldWidthSize
-				&& 0 <= _MouseY / MassSize && _MouseY / MassSize < FieldHeightSize)
-			this.Field.get(_MouseY / MassSize).get(_MouseX / MassSize).setOpen(true);
-			Frame.repaint();
+		int FieldX = _MouseX / MassSize;
+		int FieldY = _MouseY / MassSize;
+		if (0 <= FieldX && FieldX < FieldWidthSize
+				&& 0 <= FieldY && FieldY < FieldHeightSize)
+			this.Field.get(FieldY).get(FieldX).setOpen(true);
+		// 周囲にMineがない場合，周辺のマスもOpen
+		if (Field.get(FieldY).get(FieldX).RoundMineCounter == 0) {
+			for (int y = (0 <= FieldY - 1 ? FieldY - 1 : 0); y <= (FieldY + 1 < FieldHeightSize ? FieldY + 1 : FieldHeightSize - 1); y++) {
+				for (int x = (0 <= FieldX - 1 ? FieldX - 1 : 0); x <= (FieldX + 1 < FieldWidthSize ? FieldX + 1 : FieldWidthSize - 1); x++) {
+					if (!Field.get(y).get(x).isOpen()) {
+						this.Open(x * MassSize, y * MassSize);
+					}
+				}
+			}
+		}
+		Frame.repaint();
 	}
 }
 
