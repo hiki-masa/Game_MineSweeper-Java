@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MineSweeper {
-	final int FieldWidthSize;
-	final int FieldHeightSize;
-	final int MassSize = 50;
-	private ArrayList<ArrayList<Mine>> Field = new ArrayList<ArrayList<Mine>>();
-	Window Frame;
+	private final int FieldWidthSize;
+	private final int FieldHeightSize;
+	private final int MassSize = 50;
+	private final ArrayList<ArrayList<Mine>> Field = new ArrayList<ArrayList<Mine>>();
+	private Window Frame;
 	
 	/* コンストラクタ */
 	public MineSweeper(int _FieldWidthSize, int _FieldHeightSize) {
@@ -23,15 +23,15 @@ public class MineSweeper {
 				Field.get(y).add(new Mine());
 			}
 		}
-		Frame.drawField();
 		this.setMine();
 		this.countRoundMine();
+		Frame.drawField();
+		Frame.setVisible(true);
 	}
 	
 	// ゲッター
-	public ArrayList<ArrayList<Mine>> getField(){
-		return this.Field;
-	}
+	public ArrayList<ArrayList<Mine>> getField() { return Field; }
+	public int getMassSize() { return MassSize; }
 	
 	// コマンドプロンプトでの Field の表示
 	public void dispCMD() {
@@ -68,12 +68,12 @@ public class MineSweeper {
 				int counter = 0;
 				for (int y = (0 <= Y - 1 ? Y - 1 : 0); y <= (Y + 1 < FieldHeightSize ? Y + 1 : FieldHeightSize - 1); y++) {
 					for (int x = (X - 1 >= 0 ? X - 1 : 0); x <= (X + 1 < FieldWidthSize ? X + 1 : FieldWidthSize - 1); x++) {
-						if (this.Field.get(y).get(x).isMine())
+						if (Field.get(y).get(x).isMine())
 							counter++;
 					}
 				}
 				// カウントした数を記録
-				Field.get(Y).get(X).RoundMineCounter = counter;
+				Field.get(Y).get(X).setRoundMineCounter(counter);
 			}
 		}
 	}
@@ -84,18 +84,29 @@ public class MineSweeper {
 		int FieldY = _MouseY / MassSize;
 		if (0 <= FieldX && FieldX < FieldWidthSize
 				&& 0 <= FieldY && FieldY < FieldHeightSize)
-			this.Field.get(FieldY).get(FieldX).setOpen(true);
+			if (!Field.get(FieldY).get(FieldX).isCheck())
+				Field.get(FieldY).get(FieldX).setOpen(true);
 		// 周囲にMineがない場合，周辺のマスもOpen
-		if (Field.get(FieldY).get(FieldX).RoundMineCounter == 0) {
+		if (Field.get(FieldY).get(FieldX).getRoundMineCounter() == 0) {
 			for (int y = (0 <= FieldY - 1 ? FieldY - 1 : 0); y <= (FieldY + 1 < FieldHeightSize ? FieldY + 1 : FieldHeightSize - 1); y++) {
 				for (int x = (0 <= FieldX - 1 ? FieldX - 1 : 0); x <= (FieldX + 1 < FieldWidthSize ? FieldX + 1 : FieldWidthSize - 1); x++) {
 					if (!Field.get(y).get(x).isOpen()) {
-						this.Open(x * MassSize, y * MassSize);
+						Open(x * MassSize, y * MassSize);
 					}
 				}
 			}
 		}
-		Frame.repaint();
+		Frame.drawField();
+	}
+	
+	// 指定マスをCheck
+	public void Check(int _MouseX, int _MouseY) {
+		int FieldX = _MouseX / MassSize;
+		int FieldY = _MouseY / MassSize;
+		if (0 <= FieldX && FieldX < FieldWidthSize
+				&& 0 <= FieldY && FieldY < FieldHeightSize)
+			Field.get(FieldY).get(FieldX).setCheck(!Field.get(FieldY).get(FieldX).isCheck());
+		Frame.drawField();
 	}
 }
 
@@ -107,7 +118,7 @@ class Mine {
 	// チェックの有無
 	private Boolean Check;
 	// 周囲のMineの数
-	int RoundMineCounter;
+	private int RoundMineCounter;
 	
 	/* コンストラクタ */
 	public Mine() {
@@ -121,9 +132,16 @@ class Mine {
 	public Boolean isOpen()  { return this.Open; }
 	public Boolean isMine()  { return this.Mine; }
 	public Boolean isCheck() { return this.Check; }
+	public int getRoundMineCounter() { return this.RoundMineCounter; }
 	
 	// セッタ―
 	public void setOpen(boolean _input)  { this.Open = _input; }
 	public void setMine(boolean _input)  { this.Mine = _input; }
 	public void setCheck(boolean _input) { this.Check = _input; }
+	public void setRoundMineCounter(int _input) {
+		if (_input < 0)
+			System.out.println("不適切な値が代入されようとしました");
+		else
+			this.RoundMineCounter = _input;
+	}
 }

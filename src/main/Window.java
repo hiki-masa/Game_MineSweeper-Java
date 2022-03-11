@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Window extends JFrame implements MouseListener{
-	MineSweeper app;
+	private final MineSweeper app;
 	/* コンストラクタ */
 	public Window(MineSweeper _app, String _WindowName, int _Width, int _Height) {
 		this.app = _app;
@@ -35,12 +35,22 @@ public class Window extends JFrame implements MouseListener{
 	}
 	
 	public void drawField() {
-		add(new Canvas(this.app.MassSize, this.app.getField()));
+		add(new Canvas(app.getMassSize(), app.getField()));
+		repaint();
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		this.app.Open(e.getPoint().x, e.getPoint().y - app.MassSize / 2);
+		switch (e.getButton()) {
+		// 左クリック
+		case MouseEvent.BUTTON1:
+			this.app.Open(e.getPoint().x, e.getPoint().y - app.getMassSize() / 2);
+			break;
+		// 右クリック
+		case MouseEvent.BUTTON3:
+			this.app.Check(e.getPoint().x, e.getPoint().y - app.getMassSize() / 2);
+			break;
+		}
 	}
 
 	@Override
@@ -57,13 +67,15 @@ public class Window extends JFrame implements MouseListener{
 }
 
 class Canvas extends JPanel {
-	Image BasicImg = Toolkit.getDefaultToolkit().getImage("src/basic.png");
-	Image OpendImg = Toolkit.getDefaultToolkit().getImage("src/opend.png");
-	Image Open1Img = Toolkit.getDefaultToolkit().getImage("src/one.png");
-	Image Open2Img = Toolkit.getDefaultToolkit().getImage("src/two.png");
-	Image Open3Img = Toolkit.getDefaultToolkit().getImage("src/three.png");
-	Image MineImg  = Toolkit.getDefaultToolkit().getImage("src/mine.png");
-	int MassSize;
+	static private Image BasicImg = Toolkit.getDefaultToolkit().getImage("src/basic.png");
+	static private Image OpendImg = Toolkit.getDefaultToolkit().getImage("src/opend.png");
+	static private Image Open1Img = Toolkit.getDefaultToolkit().getImage("src/one.png");
+	static private Image Open2Img = Toolkit.getDefaultToolkit().getImage("src/two.png");
+	static private Image Open3Img = Toolkit.getDefaultToolkit().getImage("src/three.png");
+	static private Image Open4Img = Toolkit.getDefaultToolkit().getImage("src/four.png");
+	static private Image MineImg  = Toolkit.getDefaultToolkit().getImage("src/mine.png");
+	static private Image CheckImg = Toolkit.getDefaultToolkit().getImage("src/check.png");
+	private int MassSize;
 	ArrayList<ArrayList<Mine>> Field;
 	
 	public Canvas(int _MassSize, ArrayList<ArrayList<Mine>> _Field) {
@@ -71,27 +83,41 @@ class Canvas extends JPanel {
 		Field  = _Field;
 	}
 	
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        
-        for (int x = 0; x < Field.get(0).size(); x++) {
-        	for (int y = 0; y < Field.size(); y++) {
-        		if (Field.get(y).get(x).isOpen()) {
-        			if (Field.get(y).get(x).isMine())
-        				g.drawImage(MineImg,  MassSize * x, MassSize * y, MassSize, MassSize, this);
-        			else if (Field.get(y).get(x).RoundMineCounter == 0)
-        				g.drawImage(OpendImg, MassSize * x, MassSize * y, MassSize, MassSize, this);
-        			else if (Field.get(y).get(x).RoundMineCounter == 1)
-        				g.drawImage(Open1Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
-        			else if (Field.get(y).get(x).RoundMineCounter == 2)
-        				g.drawImage(Open2Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
-        			else if (Field.get(y).get(x).RoundMineCounter == 3)
-        				g.drawImage(Open3Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
-        		}
-        		else {
-        			g.drawImage(BasicImg, MassSize * x, MassSize * y, MassSize, MassSize, this);
-        		}
-        	}
-        }
-    }
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		
+		for (int x = 0; x < Field.get(0).size(); x++) {
+			for (int y = 0; y < Field.size(); y++) {
+				if (Field.get(y).get(x).isOpen()) {
+					if (Field.get(y).get(x).isMine())
+						g.drawImage(MineImg,  MassSize * x, MassSize * y, MassSize, MassSize, this);
+					else {
+						switch (Field.get(y).get(x).getRoundMineCounter()){
+						case 0:
+							g.drawImage(OpendImg, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						case 1:
+							g.drawImage(Open1Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						case 2:
+							g.drawImage(Open2Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						case 3:
+							g.drawImage(Open3Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						case 4:
+							g.drawImage(Open4Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						}
+					}
+				}
+				else {
+					if (Field.get(y).get(x).isCheck())
+						g.drawImage(CheckImg, MassSize * x, MassSize * y, MassSize, MassSize, this);
+					else
+						g.drawImage(BasicImg, MassSize * x, MassSize * y, MassSize, MassSize, this);
+				}
+			}
+		}
+	}
 }
