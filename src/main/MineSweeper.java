@@ -1,9 +1,11 @@
 package main;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MineSweeper {
+public class MineSweeper implements MouseListener{
 	private final int FieldWidthSize;
 	private final int FieldHeightSize;
 	private final int MassSize = 50;
@@ -14,8 +16,9 @@ public class MineSweeper {
 	public MineSweeper(int _FieldWidthSize, int _FieldHeightSize) {
 		FieldWidthSize  = _FieldWidthSize;
 		FieldHeightSize = _FieldHeightSize;
+		Canvas.setMassSize(MassSize);
 		// ウィンドウクラスの作成
-		Frame = new Window(this, "MineSweeper", MassSize * FieldWidthSize + MassSize / 4, MassSize * FieldHeightSize + MassSize * 3 / 4);
+		Frame = new Window("MineSweeper", MassSize * FieldWidthSize, MassSize * FieldHeightSize);
 		// リストの作成
 		for (int y = 0; y < FieldHeightSize; y++) {
 			Field.add(new ArrayList<>());
@@ -25,13 +28,15 @@ public class MineSweeper {
 		}
 		this.setMine();
 		this.countRoundMine();
-		Frame.drawField();
+		Frame.drawField(Field);
 		Frame.setVisible(true);
+		
+		// マウスイベントの感知
+		this.Frame.addMouseListener(this);
 	}
 	
 	// ゲッター
 	public ArrayList<ArrayList<Mine>> getField() { return Field; }
-	public int getMassSize() { return MassSize; }
 	
 	// コマンドプロンプトでの Field の表示
 	public void dispCMD() {
@@ -83,20 +88,29 @@ public class MineSweeper {
 		int FieldX = _MouseX / MassSize;
 		int FieldY = _MouseY / MassSize;
 		if (0 <= FieldX && FieldX < FieldWidthSize
-				&& 0 <= FieldY && FieldY < FieldHeightSize)
-			if (!Field.get(FieldY).get(FieldX).isCheck())
+				&& 0 <= FieldY && FieldY < FieldHeightSize) {
+			
+			// Check済みでない場合
+			if (!Field.get(FieldY).get(FieldX).isCheck()) {
+				// Mineが存在する場合
+				if (Field.get(FieldY).get(FieldX).isMine()) {
+					System.out.println("Game Over");
+					System.exit(0);
+				}
 				Field.get(FieldY).get(FieldX).setOpen(true);
-		// 周囲にMineがない場合，周辺のマスもOpen
-		if (Field.get(FieldY).get(FieldX).getRoundMineCounter() == 0) {
-			for (int y = (0 <= FieldY - 1 ? FieldY - 1 : 0); y <= (FieldY + 1 < FieldHeightSize ? FieldY + 1 : FieldHeightSize - 1); y++) {
-				for (int x = (0 <= FieldX - 1 ? FieldX - 1 : 0); x <= (FieldX + 1 < FieldWidthSize ? FieldX + 1 : FieldWidthSize - 1); x++) {
-					if (!Field.get(y).get(x).isOpen()) {
-						Open(x * MassSize, y * MassSize);
+				// 周囲にMineがない場合，周辺のマスもOpen
+				if (Field.get(FieldY).get(FieldX).getRoundMineCounter() == 0) {
+					for (int y = (0 <= FieldY - 1 ? FieldY - 1 : 0); y <= (FieldY + 1 < FieldHeightSize ? FieldY + 1 : FieldHeightSize - 1); y++) {
+						for (int x = (0 <= FieldX - 1 ? FieldX - 1 : 0); x <= (FieldX + 1 < FieldWidthSize ? FieldX + 1 : FieldWidthSize - 1); x++) {
+							if (!Field.get(y).get(x).isOpen()) {
+								Open(x * MassSize, y * MassSize);
+							}
+						}
 					}
 				}
 			}
 		}
-		Frame.drawField();
+		Frame.drawField(Field);
 	}
 	
 	// 指定マスをCheck
@@ -106,8 +120,31 @@ public class MineSweeper {
 		if (0 <= FieldX && FieldX < FieldWidthSize
 				&& 0 <= FieldY && FieldY < FieldHeightSize)
 			Field.get(FieldY).get(FieldX).setCheck(!Field.get(FieldY).get(FieldX).isCheck());
-		Frame.drawField();
+		Frame.drawField(Field);
 	}
+	
+	/* マウスイベントの設定 */
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		switch (e.getButton()) {
+		// 左クリック
+		case MouseEvent.BUTTON1:
+			this.Open(e.getPoint().x, e.getPoint().y - MassSize / 2);
+			break;
+		// 右クリック
+		case MouseEvent.BUTTON3:
+			this.Check(e.getPoint().x, e.getPoint().y - MassSize / 2);
+			break;
+		}
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {}
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+	@Override
+	public void mouseExited(MouseEvent e) {}
 }
 
 class Mine {

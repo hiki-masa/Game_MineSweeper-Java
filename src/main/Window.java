@@ -5,19 +5,14 @@ import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class Window extends JFrame implements MouseListener{
-	private final MineSweeper app;
+public class Window extends JFrame{
 	/* コンストラクタ */
-	public Window(MineSweeper _app, String _WindowName, int _Width, int _Height) {
-		this.app = _app;
-		
+	public Window(String _WindowName, int _Width, int _Height) {
 		// Windowの設定
 		setTitle(_WindowName);
 		setSize(_Width, _Height);
@@ -29,41 +24,12 @@ public class Window extends JFrame implements MouseListener{
 		// 背景色の設定
 		Container contentPane = getContentPane();
 		contentPane.setBackground(Color.GREEN);
-		
-		// マウスイベントの感知
-		addMouseListener(this);
 	}
 	
-	public void drawField() {
-		add(new Canvas(app.getMassSize(), app.getField()));
+	public void drawField(ArrayList<ArrayList<Mine>> _Field) {
+		add(new Canvas(_Field));
 		repaint();
 	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		switch (e.getButton()) {
-		// 左クリック
-		case MouseEvent.BUTTON1:
-			this.app.Open(e.getPoint().x, e.getPoint().y - app.getMassSize() / 2);
-			break;
-		// 右クリック
-		case MouseEvent.BUTTON3:
-			this.app.Check(e.getPoint().x, e.getPoint().y - app.getMassSize() / 2);
-			break;
-		}
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-
-	@Override
-	public void mouseExited(MouseEvent e) {}
 }
 
 class Canvas extends JPanel {
@@ -75,11 +41,15 @@ class Canvas extends JPanel {
 	static private Image Open4Img = Toolkit.getDefaultToolkit().getImage("src/four.png");
 	static private Image MineImg  = Toolkit.getDefaultToolkit().getImage("src/mine.png");
 	static private Image CheckImg = Toolkit.getDefaultToolkit().getImage("src/check.png");
-	private int MassSize;
+	static private int MassSize;
 	ArrayList<ArrayList<Mine>> Field;
 	
-	public Canvas(int _MassSize, ArrayList<ArrayList<Mine>> _Field) {
+	static public void setMassSize(int _MassSize) {
 		MassSize = _MassSize;
+	}
+	
+	// コンストラクタ
+	public Canvas(ArrayList<ArrayList<Mine>> _Field) {
 		Field  = _Field;
 	}
 	
