@@ -39,6 +39,7 @@ class Canvas extends JPanel {
 	static private Image Open2Img = Toolkit.getDefaultToolkit().getImage("src/two.png");
 	static private Image Open3Img = Toolkit.getDefaultToolkit().getImage("src/three.png");
 	static private Image Open4Img = Toolkit.getDefaultToolkit().getImage("src/four.png");
+	static private Image Open5Img = Toolkit.getDefaultToolkit().getImage("src/five.png");
 	static private Image MineImg  = Toolkit.getDefaultToolkit().getImage("src/mine.png");
 	static private Image CheckImg = Toolkit.getDefaultToolkit().getImage("src/check.png");
 	static private int MassSize;
@@ -77,6 +78,9 @@ class Canvas extends JPanel {
 							break;
 						case 4:
 							g.drawImage(Open4Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						case 5:
+							g.drawImage(Open5Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
 							break;
 						}
 					}
