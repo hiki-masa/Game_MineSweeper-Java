@@ -34,34 +34,33 @@ public class Window extends JFrame{
 
 class Canvas extends JPanel {
 	static private Image BasicImg = Toolkit.getDefaultToolkit().getImage("src/basic.png");
+	static private Image MineImg  = Toolkit.getDefaultToolkit().getImage("src/mine.png");
+	static private Image CheckImg = Toolkit.getDefaultToolkit().getImage("src/check.png");
 	static private Image OpendImg = Toolkit.getDefaultToolkit().getImage("src/opend.png");
 	static private Image Open1Img = Toolkit.getDefaultToolkit().getImage("src/one.png");
 	static private Image Open2Img = Toolkit.getDefaultToolkit().getImage("src/two.png");
 	static private Image Open3Img = Toolkit.getDefaultToolkit().getImage("src/three.png");
 	static private Image Open4Img = Toolkit.getDefaultToolkit().getImage("src/four.png");
 	static private Image Open5Img = Toolkit.getDefaultToolkit().getImage("src/five.png");
-	static private Image MineImg  = Toolkit.getDefaultToolkit().getImage("src/mine.png");
-	static private Image CheckImg = Toolkit.getDefaultToolkit().getImage("src/check.png");
-	static private int MassSize;
+	static private Image Open6Img = Toolkit.getDefaultToolkit().getImage("src/six.png");
+	static private Image Open7Img = Toolkit.getDefaultToolkit().getImage("src/seven.png");
+	static private Image Open8Img = Toolkit.getDefaultToolkit().getImage("src/eight.png");
 	ArrayList<ArrayList<Mine>> Field;
-	
-	static public void setMassSize(int _MassSize) {
-		MassSize = _MassSize;
-	}
 	
 	// コンストラクタ
 	public Canvas(ArrayList<ArrayList<Mine>> _Field) {
-		Field  = _Field;
+		Field = _Field;
 	}
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		int MassSize = MineSweeper.MassSize;
 		
 		for (int x = 0; x < Field.get(0).size(); x++) {
 			for (int y = 0; y < Field.size(); y++) {
 				if (Field.get(y).get(x).isOpen()) {
 					if (Field.get(y).get(x).isMine())
-						g.drawImage(MineImg,  MassSize * x, MassSize * y, MassSize, MassSize, this);
+						g.drawImage(MineImg, MassSize * x, MassSize * y, MassSize, MassSize, this);
 					else {
 						switch (Field.get(y).get(x).getRoundMineCounter()){
 						case 0:
@@ -81,6 +80,15 @@ class Canvas extends JPanel {
 							break;
 						case 5:
 							g.drawImage(Open5Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						case 6:
+							g.drawImage(Open6Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						case 7:
+							g.drawImage(Open7Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
+							break;
+						case 8:
+							g.drawImage(Open8Img, MassSize * x, MassSize * y, MassSize, MassSize, this);
 							break;
 						}
 					}

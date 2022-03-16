@@ -9,7 +9,7 @@ public class MineSweeper implements MouseListener{
 	private final int FieldWidthSize;
 	private final int FieldHeightSize;
 	private final int MineCount;
-	private final int MassSize = 50;
+	static  final int MassSize = 50;
 	private final ArrayList<ArrayList<Mine>> Field = new ArrayList<ArrayList<Mine>>();
 	private Window Frame;
 	
@@ -18,7 +18,6 @@ public class MineSweeper implements MouseListener{
 		FieldWidthSize  = _FieldWidthSize;
 		FieldHeightSize = _FieldHeightSize;
 		MineCount = (int) (FieldWidthSize * FieldHeightSize * 0.2);
-		Canvas.setMassSize(MassSize);
 		// ウィンドウクラスの作成
 		Frame = new Window("MineSweeper", MassSize * FieldWidthSize, MassSize * FieldHeightSize);
 		// リストの作成
@@ -86,7 +85,7 @@ public class MineSweeper implements MouseListener{
 	}
 	
 	// Game Over
-	public void GameOver() {
+	private void GameOver() {
 		// 結果表示のためにすべてのマスをOpen
 		for (int y = 0; y < FieldHeightSize; y++) {
 			for (int x = 0; x < FieldWidthSize; x++) {
@@ -98,7 +97,7 @@ public class MineSweeper implements MouseListener{
 	}
 	
 	// クリア判定
-	public void isClear() {
+	private void isClear() {
 		int counter = 0;
 		for (int y = 0; y < FieldHeightSize; y++) {
 			for (int x = 0; x < FieldWidthSize; x++) {
@@ -119,41 +118,37 @@ public class MineSweeper implements MouseListener{
 	}
 	
 	// 指定マスをOpen
-	public void Open(int _MouseX, int _MouseY) {
-		int FieldX = _MouseX / MassSize;
-		int FieldY = _MouseY / MassSize;
-		if (0 <= FieldX && FieldX < FieldWidthSize
-				&& 0 <= FieldY && FieldY < FieldHeightSize) {
+	public void Open(int _x, int _y) {
+		if (0 <= _x && _x < FieldWidthSize
+				&& 0 <= _y && _y < FieldHeightSize) {
 			
 			// Check済みでない場合
-			if (!Field.get(FieldY).get(FieldX).isCheck()) {
+			if (!Field.get(_y).get(_x).isCheck()) {
 				// Mineが存在する場合
-				if (Field.get(FieldY).get(FieldX).isMine()) {
+				if (Field.get(_y).get(_x).isMine()) {
 					GameOver();
 				}
-				Field.get(FieldY).get(FieldX).setOpen(true);
+				Field.get(_y).get(_x).setOpen(true);
 				// 周囲にMineがない場合，周辺のマスもOpen
-				if (Field.get(FieldY).get(FieldX).getRoundMineCounter() == 0) {
-					for (int y = (0 <= FieldY - 1 ? FieldY - 1 : 0); y <= (FieldY + 1 < FieldHeightSize ? FieldY + 1 : FieldHeightSize - 1); y++) {
-						for (int x = (0 <= FieldX - 1 ? FieldX - 1 : 0); x <= (FieldX + 1 < FieldWidthSize ? FieldX + 1 : FieldWidthSize - 1); x++) {
+				if (Field.get(_y).get(_x).getRoundMineCounter() == 0) {
+					for (int y = (0 <= _y - 1 ? _y - 1 : 0); y <= (_y + 1 < FieldHeightSize ? _y + 1 : FieldHeightSize - 1); y++) {
+						for (int x = (0 <= _x - 1 ? _x - 1 : 0); x <= (_x + 1 < FieldWidthSize ? _x + 1 : FieldWidthSize - 1); x++) {
 							if (!Field.get(y).get(x).isOpen()) {
-								Open(x * MassSize, y * MassSize);
+								Open(x, y);
 							}
 						}
 					}
 				}
+				Frame.drawField(Field);
 			}
 		}
-		Frame.drawField(Field);
 	}
 	
 	// 指定マスをCheck
-	public void Check(int _MouseX, int _MouseY) {
-		int FieldX = _MouseX / MassSize;
-		int FieldY = _MouseY / MassSize;
-		if (0 <= FieldX && FieldX < FieldWidthSize
-				&& 0 <= FieldY && FieldY < FieldHeightSize)
-			Field.get(FieldY).get(FieldX).setCheck(!Field.get(FieldY).get(FieldX).isCheck());
+	public void Check(int _x, int _y) {
+		if (0 <= _x && _x < FieldWidthSize
+				&& 0 <= _y && _y < FieldHeightSize)
+			Field.get(_y).get(_x).setCheck(!Field.get(_y).get(_x).isCheck());
 		// すべてのMineにCheckをつけたか確認
 		isClear();
 		Frame.drawField(Field);
@@ -165,11 +160,11 @@ public class MineSweeper implements MouseListener{
 		switch (e.getButton()) {
 		// 左クリック
 		case MouseEvent.BUTTON1:
-			this.Open(e.getPoint().x, e.getPoint().y - MassSize / 2);
+			this.Open(e.getPoint().x / MassSize, (e.getPoint().y - MassSize / 2) / MassSize);
 			break;
 		// 右クリック
 		case MouseEvent.BUTTON3:
-			this.Check(e.getPoint().x, e.getPoint().y - MassSize / 2);
+			this.Check(e.getPoint().x / MassSize, (e.getPoint().y - MassSize / 2) / MassSize);
 			break;
 		}
 	}
