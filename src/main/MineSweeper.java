@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MineSweeper implements MouseListener{
+	static  final int MassSize = 50;
 	private final int FieldWidthSize;
 	private final int FieldHeightSize;
 	private final int MineCount;
-	static  final int MassSize = 50;
 	private final ArrayList<ArrayList<Mine>> Field = new ArrayList<ArrayList<Mine>>();
 	private Window Frame;
 	
@@ -17,7 +17,7 @@ public class MineSweeper implements MouseListener{
 	public MineSweeper(int _FieldWidthSize, int _FieldHeightSize) {
 		FieldWidthSize  = _FieldWidthSize;
 		FieldHeightSize = _FieldHeightSize;
-		MineCount = (int) (FieldWidthSize * FieldHeightSize * 0.2);
+		MineCount = (int) (FieldWidthSize * FieldHeightSize * 0.175);
 		// ウィンドウクラスの作成
 		Frame = new Window("MineSweeper", MassSize * FieldWidthSize, MassSize * FieldHeightSize);
 		// リストの作成
@@ -36,8 +36,17 @@ public class MineSweeper implements MouseListener{
 		this.Frame.addMouseListener(this);
 	}
 	
-	// ゲッター
-	public ArrayList<ArrayList<Mine>> getField() { return Field; }
+	/* ゲッター（不使用）
+	public ArrayList<ArrayList<Mine>> getField() {
+		ArrayList<ArrayList<Mine>> CopyField = new ArrayList<ArrayList<Mine>>();
+		for (int y = 0; y < FieldHeightSize; y++) {
+			CopyField.add(new ArrayList<>());
+			for (int x = 0; x < FieldWidthSize; x++) {
+				CopyField.get(y).add(Field.get(y).get(x).clone());
+			}
+		}
+		return CopyField;
+	}*/
 	
 	// コマンドプロンプトでの Field の表示
 	public void dispCMD() {
@@ -92,7 +101,7 @@ public class MineSweeper implements MouseListener{
 				Field.get(y).get(x).setOpen(true);
 			}
 		}
-		Frame.drawField(Field);
+		Frame.repaint();
 		System.out.println("Game Over");
 	}
 	
@@ -101,7 +110,7 @@ public class MineSweeper implements MouseListener{
 		int counter = 0;
 		for (int y = 0; y < FieldHeightSize; y++) {
 			for (int x = 0; x < FieldWidthSize; x++) {
-				if (Field.get(y).get(x).isCheck())
+				if (Field.get(y).get(x).isCheck() && Field.get(y).get(x).isMine())
 					counter++;
 			}
 		}
@@ -128,18 +137,21 @@ public class MineSweeper implements MouseListener{
 				if (Field.get(_y).get(_x).isMine()) {
 					GameOver();
 				}
-				Field.get(_y).get(_x).setOpen(true);
-				// 周囲にMineがない場合，周辺のマスもOpen
-				if (Field.get(_y).get(_x).getRoundMineCounter() == 0) {
-					for (int y = (0 <= _y - 1 ? _y - 1 : 0); y <= (_y + 1 < FieldHeightSize ? _y + 1 : FieldHeightSize - 1); y++) {
-						for (int x = (0 <= _x - 1 ? _x - 1 : 0); x <= (_x + 1 < FieldWidthSize ? _x + 1 : FieldWidthSize - 1); x++) {
-							if (!Field.get(y).get(x).isOpen()) {
-								Open(x, y);
+				// Mineが存在しない場合
+				else {
+					Field.get(_y).get(_x).setOpen(true);
+					// 周囲にMineがない場合，周辺のマスもOpen
+					if (Field.get(_y).get(_x).getRoundMineCounter() == 0) {
+						for (int y = (0 <= _y - 1 ? _y - 1 : 0); y <= (_y + 1 < FieldHeightSize ? _y + 1 : FieldHeightSize - 1); y++) {
+							for (int x = (0 <= _x - 1 ? _x - 1 : 0); x <= (_x + 1 < FieldWidthSize ? _x + 1 : FieldWidthSize - 1); x++) {
+								if (!Field.get(y).get(x).isOpen()) {
+									Open(x, y);
+								}
 							}
 						}
 					}
+					Frame.repaint();
 				}
-				Frame.drawField(Field);
 			}
 		}
 	}
@@ -151,7 +163,7 @@ public class MineSweeper implements MouseListener{
 			Field.get(_y).get(_x).setCheck(!Field.get(_y).get(_x).isCheck());
 		// すべてのMineにCheckをつけたか確認
 		isClear();
-		Frame.drawField(Field);
+		Frame.repaint();
 	}
 	
 	/* マウスイベントの設定 */
@@ -212,4 +224,15 @@ class Mine {
 		else
 			this.RoundMineCounter = _input;
 	}
+	
+	/* コピー（不使用）
+	@Override
+	public Mine clone() {
+		Mine copy = new Mine();
+		copy.Open = this.Open;
+		copy.Mine = this.Mine;
+		copy.Check = this.Check;
+		copy.RoundMineCounter = this.RoundMineCounter;
+		return copy;
+	}*/
 }

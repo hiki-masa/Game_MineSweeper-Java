@@ -26,9 +26,8 @@ public class Window extends JFrame{
 		contentPane.setBackground(Color.GREEN);
 	}
 	
-	public void drawField(ArrayList<ArrayList<Mine>> _Field) {
+	public void drawField(final ArrayList<ArrayList<Mine>> _Field) {
 		add(new Canvas(_Field));
-		repaint();
 	}
 }
 
@@ -45,10 +44,10 @@ class Canvas extends JPanel {
 	static private Image Open6Img = Toolkit.getDefaultToolkit().getImage("src/six.png");
 	static private Image Open7Img = Toolkit.getDefaultToolkit().getImage("src/seven.png");
 	static private Image Open8Img = Toolkit.getDefaultToolkit().getImage("src/eight.png");
-	ArrayList<ArrayList<Mine>> Field;
+	private ArrayList<ArrayList<Mine>> Field;
 	
 	// コンストラクタ
-	public Canvas(ArrayList<ArrayList<Mine>> _Field) {
+	public Canvas(final ArrayList<ArrayList<Mine>> _Field) {
 		Field = _Field;
 	}
 	
