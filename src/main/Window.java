@@ -25,10 +25,6 @@ public class Window extends JFrame{
 		Container contentPane = getContentPane();
 		contentPane.setBackground(Color.GREEN);
 	}
-	
-	public void drawField(final ArrayList<ArrayList<Mine>> _Field) {
-		add(new Canvas(_Field));
-	}
 }
 
 class Canvas extends JPanel {
