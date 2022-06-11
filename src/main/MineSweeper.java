@@ -1,25 +1,20 @@
 package main;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MineSweeper implements MouseListener{
+public class MineSweeper{
 	static  final int MassSize = 50;
 	private final int FieldWidthSize;
 	private final int FieldHeightSize;
 	private final int MineCount;
 	private final ArrayList<ArrayList<Mine>> Field = new ArrayList<ArrayList<Mine>>();
-	private Window Frame;
 	
 	/* コンストラクタ */
 	public MineSweeper(int _FieldWidthSize, int _FieldHeightSize) {
 		FieldWidthSize  = _FieldWidthSize;
 		FieldHeightSize = _FieldHeightSize;
 		MineCount = (int) (FieldWidthSize * FieldHeightSize * 0.175);
-		// ウィンドウクラスの作成
-		Frame = new Window("MineSweeper", MassSize * FieldWidthSize, MassSize * FieldHeightSize);
 		// リストの作成
 		for (int y = 0; y < FieldHeightSize; y++) {
 			Field.add(new ArrayList<>());
@@ -29,14 +24,10 @@ public class MineSweeper implements MouseListener{
 		}
 		this.setMine();
 		this.countRoundMine();
-		Frame.add(new Canvas(Field));
-		Frame.setVisible(true);
-		
-		// マウスイベントの感知
-		this.Frame.addMouseListener(this);
+		dispCMD();
 	}
 	
-	/* ゲッター（不使用）
+	/* ゲッター（不使用）*/
 	public ArrayList<ArrayList<Mine>> getField() {
 		ArrayList<ArrayList<Mine>> CopyField = new ArrayList<ArrayList<Mine>>();
 		for (int y = 0; y < FieldHeightSize; y++) {
@@ -46,7 +37,7 @@ public class MineSweeper implements MouseListener{
 			}
 		}
 		return CopyField;
-	}*/
+	}
 	
 	// コマンドプロンプトでの Field の表示
 	public void dispCMD() {
@@ -101,7 +92,6 @@ public class MineSweeper implements MouseListener{
 				Field.get(y).get(x).setOpen(true);
 			}
 		}
-		Frame.repaint();
 		System.out.println("Game Over");
 	}
 	
@@ -153,7 +143,6 @@ public class MineSweeper implements MouseListener{
 								}
 							}
 						}
-						Frame.repaint();
 					}
 				}
 			}
@@ -190,31 +179,15 @@ public class MineSweeper implements MouseListener{
 		}
 		// すべてのMineにCheckをつけたか確認
 		isClear();
-		Frame.repaint();
 	}
 	
-	/* マウスイベントの設定 */
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		switch (e.getButton()) {
-		// 左クリック
-		case MouseEvent.BUTTON1:
-			this.Open(e.getPoint().x / MassSize, (e.getPoint().y - MassSize / 2) / MassSize);
-			break;
-		// 右クリック
-		case MouseEvent.BUTTON3:
-			this.Check(e.getPoint().x / MassSize, (e.getPoint().y - MassSize / 2) / MassSize);
-			break;
-		}
+	public int getFieldWidthSize() {
+		return FieldWidthSize;
 	}
-	@Override
-	public void mousePressed(MouseEvent e) {}
-	@Override
-	public void mouseReleased(MouseEvent e) {}
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-	@Override
-	public void mouseExited(MouseEvent e) {}
+	
+	public int getFieldHeightSize() {
+		return FieldHeightSize;
+	}
 }
 
 class Mine {
@@ -232,7 +205,7 @@ class Mine {
 		Open = false;
 		Mine = false;
 		Check = false;
-		RoundMineCounter = Integer.MAX_VALUE;
+		RoundMineCounter = -1;
 	}
 	
 	// ゲッター
@@ -252,7 +225,7 @@ class Mine {
 			this.RoundMineCounter = _input;
 	}
 	
-	/* コピー（不使用）
+	/* コピー（不使用）*/
 	@Override
 	public Mine clone() {
 		Mine copy = new Mine();
@@ -261,5 +234,5 @@ class Mine {
 		copy.Check = this.Check;
 		copy.RoundMineCounter = this.RoundMineCounter;
 		return copy;
-	}*/
+	}
 }

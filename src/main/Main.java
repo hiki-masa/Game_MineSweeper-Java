@@ -1,8 +1,10 @@
 package main;
 
 public class Main {
-	public static void main(String[] args) {
-		MineSweeper App = new MineSweeper(20, 15);
-		App.dispCMD();
+	public static MainFrame window;
+
+	public static void main(String args[]) {
+		window = new MainFrame("MineSweeper");
+		window.setVisible(true);
 	}
 }
