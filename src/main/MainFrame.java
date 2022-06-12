@@ -49,7 +49,6 @@ public class MainFrame extends JFrame {
 		super.setLayout(layout);
 
 		this.preparePanels();
-		this.setFrontScreenAndFocus(this.screenMode);
 	}
 
 	/* パネルの準備 */

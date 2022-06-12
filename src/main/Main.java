@@ -6,5 +6,6 @@ public class Main {
 	public static void main(String args[]) {
 		window = new MainFrame("MineSweeper");
 		window.setVisible(true);
+		window.setFrontScreenAndFocus(ScreenMode.TITLE);
 	}
 }
